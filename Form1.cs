@@ -1,3 +1,4 @@
+using System.Resources;
 using System.Text.RegularExpressions;
 
 namespace _10._7_hm
@@ -5,6 +6,7 @@ namespace _10._7_hm
     public partial class Form1 : Form
     {
         TimeSpan ts;
+        ResourceManager resource = new ResourceManager(typeof(Form1)); 
         bool areValid;
         public Form1()
         {
@@ -17,7 +19,7 @@ namespace _10._7_hm
         {
             ts = dateTimePickerEnd.Value - dateTimePickerStart.Value;
             if (check)
-                label4.Text = $"Cost of work: {((int)ts.TotalDays + 1) * int.Parse(textBox1.Text)}";
+                label4.Text = string.Format(resource.GetString("costString")!, ((int)ts.TotalDays + 1) * int.Parse(textBox1.Text));
         }
 
         private void dateTimePickerStart_ValueChanged(object sender, EventArgs e)
@@ -25,7 +27,7 @@ namespace _10._7_hm
             if (ts.TotalDays + 1 < 0)
             {
                 textBox1.Enabled = areValid;
-                errorProvider1.SetError(dateTimePickerStart, "Start date can't be later than the completion date.");
+                errorProvider1.SetError(dateTimePickerStart, resource.GetString("errorDateStart"));
             }
             ValidateDate();
             //ValidateText();
@@ -33,12 +35,12 @@ namespace _10._7_hm
 
         private void dateTimePickerEnd_ValueChanged(object sender, EventArgs e)
         {
+            ValidateDate();
             if (!(ts.TotalDays + 1 > 0))
             {
                 textBox1.Enabled = areValid;
-                errorProvider1.SetError(dateTimePickerEnd, "Completion date can't be later than the start date.");
+                errorProvider1.SetError(dateTimePickerEnd, resource.GetString("errorDateEnd"));
             }
-            ValidateDate();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -53,7 +55,7 @@ namespace _10._7_hm
             if (dateTimePickerEnd.Value < DateTime.Today || dateTimePickerStart.Value < DateTime.Today)
             {
                 textBox1.Enabled = false;
-                errorProvider1.SetError(dateTimePickerEnd, "Date can't be in past");
+                errorProvider1.SetError(dateTimePickerEnd, resource.GetString("errorDatePast"));
             }
             else
             {
@@ -63,14 +65,14 @@ namespace _10._7_hm
         }
         public void ValidateText()
         {
-            label4.Text = "Cost of work:";
+            label4.Text = resource.GetString("cost");
             if (new Regex("[0-9]").IsMatch(textBox1.Text) == false)
             {
-                errorProvider1.SetError(textBox1, "Text is not digit");
+                errorProvider1.SetError(textBox1, resource.GetString("errorNotDigit"));
             }
             else if (int.Parse(textBox1.Text) <= 0)
             {
-                errorProvider1.SetError(textBox1, "Price is lower than zero or equals zero");
+                errorProvider1.SetError(textBox1, resource.GetString("errorPrice"));
             }
             else
             {
